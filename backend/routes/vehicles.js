@@ -3,11 +3,33 @@ const pool = require('../db/pool');
 
 router.get('/', async (req, res) => {
   try {
+    const wantsPagination = req.query.page !== undefined || req.query.paginated === 'true' || req.query.limit !== undefined;
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 25));
+    const offset = (page - 1) * limit;
+
+    if (!wantsPagination) {
+      const all = await pool.query(`
+        SELECT v.*, c.first_name || ' ' || c.last_name as customer_name
+        FROM vehicles v LEFT JOIN customers c ON v.customer_id = c.id ORDER BY v.id DESC
+      `);
+      return res.json(all.rows);
+    }
+
     const result = await pool.query(`
       SELECT v.*, c.first_name || ' ' || c.last_name as customer_name
-      FROM vehicles v LEFT JOIN customers c ON v.customer_id = c.id ORDER BY v.id DESC
-    `);
-    res.json(result.rows);
+      FROM vehicles v LEFT JOIN customers c ON v.customer_id = c.id
+      ORDER BY v.id DESC LIMIT $1 OFFSET $2
+    `, [limit, offset]);
+    const countResult = await pool.query('SELECT COUNT(*)::int AS total FROM vehicles');
+    res.json({
+      data: result.rows,
+      pagination: {
+        page, limit,
+        total: countResult.rows[0].total,
+        totalPages: Math.ceil(countResult.rows[0].total / limit)
+      }
+    });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

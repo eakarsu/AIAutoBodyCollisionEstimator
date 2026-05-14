@@ -3,8 +3,42 @@ const pool = require('../db/pool');
 
 router.get('/', async (req, res) => {
   try {
-    const result = await pool.query('SELECT * FROM customers ORDER BY id DESC');
-    res.json(result.rows);
+    const wantsPagination = req.query.page !== undefined || req.query.paginated === 'true' || req.query.limit !== undefined;
+    const page = Math.max(1, parseInt(req.query.page) || 1);
+    const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 25));
+    const offset = (page - 1) * limit;
+    const search = req.query.search || null;
+
+    const conds = [];
+    const params = [];
+    if (search) {
+      params.push(`%${search}%`);
+      conds.push(`(first_name ILIKE $${params.length} OR last_name ILIKE $${params.length} OR email ILIKE $${params.length})`);
+    }
+    const where = conds.length ? `WHERE ${conds.join(' AND ')}` : '';
+
+    if (!wantsPagination) {
+      const all = await pool.query(`SELECT * FROM customers ${where} ORDER BY id DESC`, params);
+      return res.json(all.rows);
+    }
+
+    const cParams = [...params];
+    params.push(limit); const lp = `$${params.length}`;
+    params.push(offset); const op = `$${params.length}`;
+    const result = await pool.query(
+      `SELECT * FROM customers ${where} ORDER BY id DESC LIMIT ${lp} OFFSET ${op}`,
+      params
+    );
+    const countResult = await pool.query(`SELECT COUNT(*)::int AS total FROM customers ${where}`, cParams);
+
+    res.json({
+      data: result.rows,
+      pagination: {
+        page, limit,
+        total: countResult.rows[0].total,
+        totalPages: Math.ceil(countResult.rows[0].total / limit)
+      }
+    });
   } catch (err) { res.status(500).json({ error: err.message }); }
 });
 

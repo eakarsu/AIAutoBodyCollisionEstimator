@@ -19,6 +19,8 @@ import Appointments from './pages/Appointments'
 import Inventory from './pages/Inventory'
 import Reports from './pages/Reports'
 import Settings from './pages/Settings'
+import AITools from './pages/AITools'
+import Integrations from './pages/Integrations' // Apply pass 5
 
 function Sidebar({ user, onLogout }) {
   const navigate = useNavigate()
@@ -41,6 +43,7 @@ function Sidebar({ user, onLogout }) {
     { path: '/photos', label: 'Photo Gallery', icon: '📷' },
     { path: '/customers', label: 'Customers', icon: '👥' },
     { path: '/vehicles', label: 'Vehicles', icon: '🚗' },
+    { path: '/ai-tools', label: 'AI Tools', icon: '🤖' },
     { path: '/reports', label: 'Reports', icon: '📈' },
     { path: '/settings', label: 'Settings', icon: '⚙️' },
   ]
@@ -135,6 +138,8 @@ function AppRoutes() {
         <Route path="/photos" element={<Photos />} />
         <Route path="/appointments" element={<Appointments />} />
         <Route path="/inventory" element={<Inventory />} />
+        <Route path="/ai-tools" element={<AITools />} />
+        <Route path="/integrations" element={<Integrations />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/settings" element={<Settings />} />
         <Route path="*" element={<Navigate to="/dashboard" />} />

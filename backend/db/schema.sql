@@ -282,3 +282,32 @@ CREATE TABLE IF NOT EXISTS shop_settings (
   category VARCHAR(50) DEFAULT 'general',
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Original estimate snapshot column for quality scorecard (variance vs actual)
+ALTER TABLE cost_estimates ADD COLUMN IF NOT EXISTS estimated_at_create DECIMAL(10,2);
+
+-- AI results JSONB persistence (used by routes/ai.js)
+CREATE TABLE IF NOT EXISTS ai_results (
+  id SERIAL PRIMARY KEY,
+  endpoint VARCHAR(120) NOT NULL,
+  input_data JSONB NOT NULL,
+  result_data JSONB NOT NULL,
+  user_id INTEGER,
+  model_used VARCHAR(255),
+  tokens_used INTEGER,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_ai_results_endpoint ON ai_results(endpoint);
+CREATE INDEX IF NOT EXISTS idx_ai_results_created ON ai_results(created_at DESC);
+
+-- Parts lookups (used by routes/ai.js lookup-parts)
+CREATE TABLE IF NOT EXISTS parts_lookups (
+  id SERIAL PRIMARY KEY,
+  vehicle_year INTEGER,
+  vehicle_make VARCHAR(100),
+  vehicle_model VARCHAR(100),
+  damaged_parts TEXT[],
+  ai_response JSONB,
+  model_used VARCHAR(100),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -150,4 +150,19 @@ export const api = {
   evaluateSupplier: (data) => request('/ai/evaluate-supplier', { method: 'POST', body: JSON.stringify(data) }),
   technicianMatch: (data) => request('/ai/technician-match', { method: 'POST', body: JSON.stringify(data) }),
   analyzeInvoice: (data) => request('/ai/analyze-invoice', { method: 'POST', body: JSON.stringify(data) }),
+
+  // ── Audit-driven new AI features ─────────────────────────────────────
+  aiHistory: (params = {}) => request(`/ai/history?${new URLSearchParams(params).toString()}`),
+  insuranceComparison: (data) => request('/ai/insurance-comparison', { method: 'POST', body: JSON.stringify(data) }),
+  partsAvailability: (data) => request('/ai/parts-availability', { method: 'POST', body: JSON.stringify(data) }),
+  qualityScorecard: () => request('/ai/quality-scorecard'),
+  matchTechnician: (data) => request('/ai/match-technician', { method: 'POST', body: JSON.stringify(data) }),
+  photoAnnotation: (data) => request('/ai/photo-annotation', { method: 'POST', body: JSON.stringify(data) }),
+  predictTimeline: (data) => request('/ai/predict-timeline', { method: 'POST', body: JSON.stringify(data) }),
+  paintMatch: (data) => request('/ai/paint-match', { method: 'POST', body: JSON.stringify(data) }),
+  complianceCheck: (data) => request('/ai/compliance-check', { method: 'POST', body: JSON.stringify(data) }),
+  totalLossPrediction: (data) => request('/ai/total-loss-prediction', { method: 'POST', body: JSON.stringify(data) }),
+  paintDegradation: (data) => request('/ai/paint-degradation', { method: 'POST', body: JSON.stringify(data) }),
+
+  lookupParts: (data) => request('/ai/lookup-parts', { method: 'POST', body: JSON.stringify(data) }),
 };
