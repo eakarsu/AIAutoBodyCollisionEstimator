@@ -74,3 +74,6 @@ app.use('/api/gap-real-time-parts-availability-supplier', require('./routes/gap_
 app.use('/api/gap-insurance-carrier-api-submission-direct', require('./routes/gap_insurance_carrier_api_submission_direct'));
 app.use('/api/gap-customer-facing-repair-status-portal', require('./routes/gap_customer_facing_repair_status_portal'));
 app.use('/api/gap-notifications-subsystem', require('./routes/gap_notifications_subsystem'));
+
+// Custom Views (damage diagram, cost breakdown, claim PDF, parts wizard)
+app.use('/api/custom-views', require('./routes/customViews'));
