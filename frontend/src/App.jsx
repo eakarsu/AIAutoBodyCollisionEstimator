@@ -1,3 +1,5 @@
+import CodexCustomVizFeature from './pages/CodexCustomVizFeature';
+import CodexOperationsFeature from './pages/CodexOperationsFeature';
 import React, { useState, useEffect } from 'react'
 import { BrowserRouter, Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom'
 import { api } from './services/api'
@@ -22,6 +24,7 @@ import Settings from './pages/Settings'
 import AITools from './pages/AITools'
 import Integrations from './pages/Integrations' // Apply pass 5
 import CustomViewsPage from './pages/CustomViewsPage'
+import SupplementApprovalTracker from './pages/SupplementApprovalTracker'
 
 function Sidebar({ user, onLogout }) {
   const navigate = useNavigate()
@@ -46,6 +49,7 @@ function Sidebar({ user, onLogout }) {
     { path: '/vehicles', label: 'Vehicles', icon: '🚗' },
     { path: '/ai-tools', label: 'AI Tools', icon: '🤖' },
     { path: '/custom-views', label: 'Estimator Views', icon: '🗂️' },
+    { path: '/supplement-approval-tracker', label: 'Supplements', icon: '✅' },
     { path: '/reports', label: 'Reports', icon: '📈' },
     { path: '/settings', label: 'Settings', icon: '⚙️' },
   ]
@@ -125,6 +129,9 @@ function AppRoutes() {
   return (
     <ProtectedLayout user={user} onLogout={handleLogout}>
       <Routes>
+        <Route path="/codex/custom-viz" element={<CodexCustomVizFeature />} />
+        <Route path="/codex/operations" element={<CodexOperationsFeature />} />
+
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/customers" element={<Customers />} />
         <Route path="/vehicles" element={<Vehicles />} />
@@ -142,6 +149,7 @@ function AppRoutes() {
         <Route path="/inventory" element={<Inventory />} />
         <Route path="/ai-tools" element={<AITools />} />
         <Route path="/custom-views" element={<CustomViewsPage />} />
+        <Route path="/supplement-approval-tracker" element={<SupplementApprovalTracker />} />
         <Route path="/integrations" element={<Integrations />} />
         <Route path="/reports" element={<Reports />} />
         <Route path="/settings" element={<Settings />} />

@@ -50,6 +50,7 @@ app.use('/api/ai-integrations', require('./routes/integrations'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/estimates', require('./routes/estimates'));
 app.use('/api/payments', require('./routes/estimates')); // Stripe webhook at /api/payments/webhook
+app.use('/api/supplement-approval-tracker', require('./routes/supplementApprovalTracker'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
 
