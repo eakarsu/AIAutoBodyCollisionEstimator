@@ -3,6 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
+const { validateRuntime } = require('./config/runtime');
+validateRuntime();
 
 const app = express();
 const PORT = process.env.BACKEND_PORT || 3001;
@@ -29,6 +31,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
+app.use('/api', (req, res, next) => req.path === '/health' ? next() : require('./middleware/auth')(req, res, next));
 app.use('/api/customers', require('./routes/customers'));
 app.use('/api/vehicles', require('./routes/vehicles'));
 app.use('/api/damage-assessments', require('./routes/damageAssessments'));
@@ -45,36 +48,18 @@ app.use('/api/appointments', require('./routes/appointments'));
 app.use('/api/inventory', require('./routes/inventory'));
 app.use('/api/reports', require('./routes/reports'));
 app.use('/api/settings', require('./routes/settings'));
-app.use('/api/ai', require('./routes/ai'));
-app.use('/api/ai-integrations', require('./routes/integrations'));
 app.use('/api/dashboard', require('./routes/dashboard'));
 app.use('/api/estimates', require('./routes/estimates'));
-app.use('/api/payments', require('./routes/estimates')); // Stripe webhook at /api/payments/webhook
 app.use('/api/supplement-approval-tracker', require('./routes/supplementApprovalTracker'));
+app.use('/api/estimate-cases', require('./middleware/auth'), require('./routes/governedEstimates'));
 
 app.get('/api/health', (req, res) => res.json({ status: 'ok' }));
+
+// Generated AI, gap, payment, carrier, OEM, CV, and supplier-provider routes are quarantined.
+
+// Custom Views (damage diagram, cost breakdown, claim PDF, parts wizard)
+app.use('/api/custom-views', require('./routes/customViews'));
 
 app.listen(PORT, () => {
   console.log(`Backend server running on port ${PORT}`);
 });
-
-// BATCH_00_AUDIT_MOUNTS
-app.use('/api/cv-damage', require('./routes/cvDamage'));
-app.use('/api/parts-pricing-feed', require('./routes/partsPricingFeed'));
-app.use('/api/carrier-submit', require('./routes/carrierSubmit'));
-app.use('/api/recycled-marketplace', require('./routes/recycledMarketplace'));
-app.use('/api/oem-insurance-bridge', require('./routes/oemInsuranceBridge'));
-
-// === Batch 00 Gaps & Frontend Mounts ===
-app.use('/api/gap-ai-total-loss-vs-repairable', require('./routes/gap_ai_total_loss_vs_repairable'));
-app.use('/api/gap-ai-paint-interior-degradation-age', require('./routes/gap_ai_paint_interior_degradation_age'));
-app.use('/api/gap-ai-parts-substitution-recommendation', require('./routes/gap_ai_parts_substitution_recommendation'));
-app.use('/api/gap-ai-labor-time-benchmark-estimator', require('./routes/gap_ai_labor_time_benchmark_estimator'));
-app.use('/api/gap-live-vin-decoder-integration-exact', require('./routes/gap_live_vin_decoder_integration_exact'));
-app.use('/api/gap-real-time-parts-availability-supplier', require('./routes/gap_real_time_parts_availability_supplier'));
-app.use('/api/gap-insurance-carrier-api-submission-direct', require('./routes/gap_insurance_carrier_api_submission_direct'));
-app.use('/api/gap-customer-facing-repair-status-portal', require('./routes/gap_customer_facing_repair_status_portal'));
-app.use('/api/gap-notifications-subsystem', require('./routes/gap_notifications_subsystem'));
-
-// Custom Views (damage diagram, cost breakdown, claim PDF, parts wizard)
-app.use('/api/custom-views', require('./routes/customViews'));
