@@ -3,6 +3,12 @@ const bcrypt = require('bcryptjs');
 const fs = require('fs');
 const path = require('path');
 
+function requireDemoPassword() {
+  const password = process.env.DEMO_PASSWORD || process.env.SEED_DEMO_PASSWORD || process.env.DEMO_SEED_PASSWORD || '';
+  if (password.length < 12 || password.length > 1024) throw new Error('DEMO_PASSWORD must contain 12-1024 characters');
+  return password;
+}
+
 async function seed() {
   const client = await pool.connect();
   try {
@@ -15,7 +21,7 @@ async function seed() {
     await client.query('TRUNCATE users, photos, invoices, work_orders, suppliers, technicians, cost_estimates, repair_timelines, insurance_claims, damage_assessments, parts_pricing, vehicles, customers, appointments, inventory, shop_settings RESTART IDENTITY CASCADE');
 
     // Seed Users
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    const hashedPassword = await bcrypt.hash(requireDemoPassword(), 10);
     await client.query(`
       INSERT INTO users (email, password, full_name, role) VALUES
       ('admin@autobody.com', $1, 'John Admin', 'admin'),

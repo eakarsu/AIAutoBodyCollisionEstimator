@@ -8,8 +8,8 @@ export default function Login({ onLogin }) {
   const [loading, setLoading] = useState(false)
 
   const handleAutofill = () => {
-    setEmail('admin@autobody.com')
-    setPassword('password123')
+    setEmail(import.meta.env.VITE_DEMO_EMAIL || '')
+    setPassword(import.meta.env.VITE_DEMO_PASSWORD || '')
   }
 
   const handleSubmit = async (e) => {
