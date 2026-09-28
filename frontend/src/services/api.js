@@ -21,6 +21,7 @@ async function request(path, options = {}) {
 export const api = {
   // Auth
   login: (email, password) => request('/auth/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
+  getDemoCredentials: () => request('/auth/demo-credentials'),
   getMe: () => request('/auth/me'),
 
   // Dashboard

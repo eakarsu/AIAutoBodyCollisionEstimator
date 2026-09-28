@@ -7,9 +7,15 @@ export default function Login({ onLogin }) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
-  const handleAutofill = () => {
-    setEmail(import.meta.env.VITE_DEMO_EMAIL || '')
-    setPassword(import.meta.env.VITE_DEMO_PASSWORD || '')
+  const handleAutofill = async () => {
+    setError('')
+    try {
+      const credentials = await api.getDemoCredentials()
+      setEmail(credentials.email)
+      setPassword(credentials.password)
+    } catch (err) {
+      setError(err.message || 'Demo credentials are unavailable')
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -38,7 +44,7 @@ export default function Login({ onLogin }) {
         {error && <div className="alert alert-error">{error}</div>}
 
         <button className="btn btn-autofill btn-block" onClick={handleAutofill}>
-          ⚡ Quick Fill Demo Credentials
+          Auto Fill Demo Credentials
         </button>
 
         <form onSubmit={handleSubmit}>
@@ -56,7 +62,7 @@ export default function Login({ onLogin }) {
         </form>
 
         <p style={{ textAlign: 'center', marginTop: 16, fontSize: 12, color: '#94a3b8' }}>
-          Demo accounts: admin@autobody.com, estimator@autobody.com, tech@autobody.com (pass: password123)
+          Fill the local demo account, then click Sign In.
         </p>
       </div>
     </div>

@@ -3,6 +3,24 @@ const pool = require('../db/pool');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+router.get('/demo-credentials', (req, res) => {
+  if (
+    process.env.NODE_ENV === 'production' ||
+    process.env.ENABLE_DEMO_CREDENTIAL_AUTOFILL === 'false'
+  ) {
+    return res.status(404).json({ error: 'Demo credentials are unavailable' });
+  }
+
+  const email = process.env.DEMO_EMAIL || process.env.SEED_ADMIN_EMAIL;
+  const password = process.env.DEMO_PASSWORD || process.env.SEED_ADMIN_PASSWORD;
+  if (!email || !password) {
+    return res.status(404).json({ error: 'Demo credentials are unavailable' });
+  }
+
+  res.set('Cache-Control', 'no-store');
+  return res.json({ email, password });
+});
+
 router.post('/login', async (req, res) => {
   try {
     const { email, password } = req.body;
